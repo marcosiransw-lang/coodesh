@@ -58,3 +58,60 @@ Construir as seguintes consultas:
 ## Suporte
 
 Para tirar dúvidas sobre o processo envie uma mensagem diretamente a um especialista no chat da plataforma. 
+
+
+## Respostas às requisições propostas no desafio:
+
+/* Listar todos Clientes que não tenham realizado uma compra */
+/* Desconhecendo o domínio do campo order_status, não é possível considerar que alguém não realizou uma compra caso sua compra tenha status de cancelada. */
+/* Sendo assim, a seleção considerará que qualquer ordem de compra registrada, independentemente do status, será considerada uma compra realizada. */
+select C.first_name,
+       C.last_name,
+       C.phone,
+       C.email,
+       C.street,
+       C.city,
+       C.state,
+       C.zip_code
+from   customers   C
+where  not exists( select 1
+                   from   orders    O
+                   where  O.customer_id = C.customer_id
+                 )
+order by
+       C.state,
+       C.city,
+       C.first_name,
+       C.last_name
+
+
+
+/* Listar os Produtos que não tenham sido comprados */
+/* A seleção não considera o status (order_status) de ordens de compra que tenham sido eventualmente canceladas */
+select Ct.category_name,
+       B.brand_name,
+       P.product_name,
+       P.model_year,
+       P.list_price
+from   products   P,
+       brands     B,
+       categories Ct
+where  B.brand_id       = P.brand_id
+  and  Ct.category_id   = P.category_id
+  and  not exists( select 1
+                   from   order_items  OI
+                   where  OI.product_id = P.product_id
+                 )
+order by
+       Ct.category_name,
+       B.brand_name,
+       P.product_name,
+       P.model_year
+
+
+
+/* Listar os Produtos sem Estoque */
+
+
+
+
