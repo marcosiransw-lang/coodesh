@@ -85,7 +85,6 @@ order by
        C.last_name
 
 
-
 /* Listar os Produtos que não tenham sido comprados */
 /* A seleção não considera o status (order_status) de ordens de compra que tenham sido eventualmente canceladas */
 select Ct.category_name,
@@ -107,7 +106,6 @@ order by
        B.brand_name,
        P.product_name,
        P.model_year
-
 
 
 /* Listar os Produtos sem Estoque */
@@ -145,7 +143,6 @@ order by
              P.model_year
 
 
-
 /* Agrupar a quantidade de vendas DE uma determinada Marca por Loja */
 /* Em vez de receber o id ou nome da "determinada Marca" como parâmetro, */
 /* a seleção irá listar para todas as marcas a quantidade de vendas por loja */
@@ -154,29 +151,48 @@ select B.brand_name,
        Sr.city,
        Sr.store_name,
        SUM( OI.quantity )
-
 from   products     P,
        brands       B,
        order_items  OI,
        order        O,
        stores       Sr
-
 where  B.brand_id       = P.brand_id
   and  OI.product_id    = P.product_id
   and  O.order_id       = OI.order_id
   and  Sr.store_id      = O.store_id
-
 group by
        B.brand_name,
        Sr.state,
        Sr.city,
        Sr.store_name
-
 order by
        B.brand_name,
        Sr.state,
        Sr.city,
        Sr.store_name
 
+
+/* Listar os Funcionarios que não estejam relacionados a um Pedido */
+select Sr.state,
+       Sr.city,
+       Sr.store_name,
+       Sf.first_name,
+       Sf.last_name,
+       Sf.email,
+       Sf.phone,
+       Sf.active
+from   staffs       Sf,
+       stores       Sr
+where  Sr.store_id      = Sf.store_id
+  and  not exists( select 1
+                   from   orders      O
+                   where  O.staff_id  = Sf.staff_id
+                 )
+order by
+       Sr.state,
+       Sr.city,
+       Sr.store_name,
+       Sf.first_name,
+       Sf.last_name
 
 
