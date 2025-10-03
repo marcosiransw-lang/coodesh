@@ -111,6 +111,38 @@ order by
 
 
 /* Listar os Produtos sem Estoque */
+/* A seleção considera que um produto está sem estoque caso não haja quantidade dele em nenhuma loja */
+select       Ct.category_name,
+             B.brand_name,
+             P.product_name,
+             P.model_year,
+             P.list_price,
+             SUM( COALESCE(S.quantity, 0) )
+
+from         products   P
+
+inner join   brands     B
+        on   B.brand_id       = P.brand_id
+
+inner join   categories Ct
+        on   Ct.category_id   = P.category_id
+
+left join    stocks  S
+        on   S.product_id     = P.product_id
+
+group by     Ct.category_name,
+             B.brand_name,
+             P.product_name,
+             P.model_year,
+             P.list_price
+
+having       SUM( COALESCE(S.quantity, 0) )   = 0
+
+order by
+             Ct.category_name,
+             B.brand_name,
+             P.product_name,
+             P.model_year
 
 
 
